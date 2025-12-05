@@ -9,12 +9,12 @@ on:
  
 jobs:
  build-job:
- runs-on: ubuntu-latest # 指定运⾏环境，等同于GitLab 的Runner 标签
+  runs-on: ubuntu-latest # 指定运⾏环境，等同于GitLab 的Runner 标签
+  steps:
+   - name: Run build script# ${{ github.actor }} 是GitHub 的上下⽂变量，对应$GITLAB_USER_LOGIN 
+     run: echo "Hello, ${{ github.actor }}!"
  
-steps:- name: Run build script
- # ${{ github.actor }} 是GitHub 的上下⽂变量，对应
- $GITLAB_USER_LOGIN 
-run: echo "Hello, ${{ github.actor }}!"
+
  test-job1:
  needs: build-job # 依赖build-job，确保顺序执⾏（模拟GitLab 的 stage 顺序）
  
@@ -40,8 +40,6 @@ runs-on: ubuntu-latest
  environment: production # GitHub 的环境部署功能
  
 steps:- name: Deploy script
- # ${{ github.ref_name }} 
-对应
- $CI_COMMIT_BRANCH 
+ # ${{ github.ref_name }} 对应$CI_COMMIT_BRANCH 
 run: echo "This job deploys something from the ${{ github.ref_name }} 
 branch.
