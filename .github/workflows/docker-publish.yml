@@ -1,14 +1,15 @@
 name: Docker Build and Push
-
 on:
   push:
     branches: [ "main" ]
 
+# 关键：允许工作流把镜像推到 GHCR
 permissions:
   contents: read
   packages: write
 
 jobs:
+  # 1) Test Job
   test:
     runs-on: ubuntu-latest
     steps:
@@ -26,6 +27,7 @@ jobs:
       - name: Run tests
         run: npm test
 
+  # 2) Build-and-Push Job（依赖 test）
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
@@ -46,9 +48,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .  # 补充基础配置中缺失的上下文路径
+          context: .
           push: true
-          # 同时添加 latest 标签和 Git Commit SHA 标签（截取前7位，生产环境常用）
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/ci-cd-practice:latest
-            ghcr.io/${{ github.repository_owner }}/ci-cd-practice:${{ github.sha::7 }}
+          # 镜像名必须小写；ci-cd-practice 对应你 package.json 的 name
+          tags: ghcr.io/${{ github.repository_owner }}/ci-cd-practice:latest
